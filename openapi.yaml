@@ -3,12 +3,12 @@ openapi: 3.0.3
 info:
   title: API de Produtos
   description: Produtos de Venda da Empresa X
-  termsOfService: http//swager.io/terms
+  termsOfService: http://swagger.io/terms
   contact:
     email: fatec@fatecfranca.edu.br
   license:
     name: Apache 2.0
-    url: http//swager.io/terms
+    url: http://swagger.io/terms
   version: 1.0.0
 
 servers:
@@ -27,22 +27,105 @@ paths:
               $ref: "#/components/schemas/ProdutoRequest"
       responses:
         '201':
-          description: Sucesso cadastro produto
+          description: Sucesso ao cadastrar produto
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProdutoResponse"
-                
-                
+    get:
+      summary: Busca produtos com filtros
+      parameters:
+        - name: descricao
+          in: query
+          description: Descrição do produto para filtro
+          required: false
+          schema:
+            type: string
+        - name: categorias
+          in: query
+          description: Categoria(s) do produto para filtro
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: Produtos encontrados
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProdutoResponse"
+        '404':
+          description: Nenhum produto encontrado
+  /produtos/{id}:
+    get:
+      summary: Busca produto por ID
+      parameters:
+        - name: id
+          in: path
+          description: ID do produto
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Produto encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProdutoResponse"
+        '404':
+          description: Produto não encontrado
+    put:
+      summary: Atualiza um produto existente
+      parameters:
+        - name: id
+          in: path
+          description: ID do produto
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProdutoRequest"
+      responses:
+        '200':
+          description: Produto atualizado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProdutoResponse"
+        '404':
+          description: Produto não encontrado
+    delete:
+      summary: Remove um produto
+      parameters:
+        - name: id
+          in: path
+          description: ID do produto
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Produto removido com sucesso
+        '404':
+          description: Produto não encontrado
+
 components:
   schemas:
-    
     ProdutoRequest:
       type: object
       properties:
         descricao:
           type: string
-          description: Descricao do produto
+          description: Descrição do produto
           example: Geladeira
           maxLength: 100
           minLength: 5
@@ -53,12 +136,12 @@ components:
               type: number
               format: decimal
               example: 19.99
-              description: Preço custo produto
+              description: Preço de custo do produto
             venda:
               type: number
               format: decimal
               example: 25.87
-              description: Preco de venda consumidor
+              description: Preço de venda do produto
         categorias:
           type: array
           items:
@@ -66,8 +149,8 @@ components:
           example: ["A", "B"]
       required:
         - descricao
-        - categorias
         - preco
+        - categorias
 
     ProdutoResponse:
       type: object
@@ -77,10 +160,8 @@ components:
           example: 29394
         descricao:
           type: string
-          description: Descricao do produto
+          description: Descrição do produto
           example: Geladeira
-          maxLength: 100
-          minLength: 5
         preco: 
           type: object
           properties:
@@ -88,15 +169,14 @@ components:
               type: number
               format: decimal
               example: 19.99
-              description: Preço custo produto
+              description: Preço de custo do produto
             venda:
               type: number
               format: decimal
               example: 25.87
-              description: Preco de venda consumidor
+              description: Preço de venda do produto
         categorias:
           type: array
           items:
             type: string
           example: ["A", "B"]
-    
